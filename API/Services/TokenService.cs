@@ -1,4 +1,5 @@
 ﻿using API.Entities;
+using API.Extensions;
 using API.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -9,7 +10,7 @@ namespace API.Services;
 
 public class TokenService(IConfiguration config) : ITokenService
 {
-    private readonly SymmetricSecurityKey _key = new(Encoding.UTF8.GetBytes(config["TokenKey"]!));
+    private readonly SymmetricSecurityKey _key = new(config.GetTokenKey());
 
     public string CreateToken(AppUser user)
     {

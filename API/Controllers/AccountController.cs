@@ -49,7 +49,7 @@ public class AccountController(DataContext _context, ITokenService _tokenService
 
         using var hmac = new HMACSHA512(user.PasswordSalt);
 
-        var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
+        var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password ?? ""));
 
         if (memcmp(computedHash, user.PasswordHash, computedHash.Length) != 0)
             return Unauthorized("Invalid password");

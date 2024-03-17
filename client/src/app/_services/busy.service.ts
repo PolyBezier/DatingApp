@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { SPINNER_TYPE } from '../consts';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class BusyService {
   busy() {
     this.busyRequestCount++;
     this.spinnerService.show(undefined, {
-      type: 'pacman',
+      type: SPINNER_TYPE,
       bdColor: 'rgba(255,255,255,0)',
       color: '#333333'
     });

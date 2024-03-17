@@ -4,6 +4,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { ToastrModule } from 'ngx-toastr';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { SPINNER_TYPE } from 'src/app/consts';
 
 @NgModule({
   declarations: [],
@@ -15,7 +16,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
       positionClass: 'toast-bottom-right'
     }),
     NgxSpinnerModule.forRoot({
-      type: 'pacman'
+      type: SPINNER_TYPE
     })
   ],
   exports: [

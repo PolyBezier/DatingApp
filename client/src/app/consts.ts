@@ -1,1 +1,1 @@
-export const SPINNER_TYPE = 'pacman';
+export const SPINNER_TYPE = 'timer';

@@ -8,8 +8,6 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 
-#pragma warning disable CA1862
-
 namespace API.Controllers;
 
 public class AccountController(DataContext _context, ITokenService _tokenService) : BaseApiController

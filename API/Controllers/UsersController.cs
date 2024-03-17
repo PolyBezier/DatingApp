@@ -1,4 +1,6 @@
 ﻿using API.DTOs;
+using API.Entities;
+using API.Extensions;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +10,10 @@ using System.Security.Claims;
 namespace API.Controllers;
 
 [Authorize]
-public class UsersController(IUserRepository _userRepository, IMapper _mapper) : BaseApiController
+public class UsersController(
+    IUserRepository _userRepository,
+    IMapper _mapper,
+    IPhotoService _photoService) : BaseApiController
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
@@ -27,8 +32,7 @@ public class UsersController(IUserRepository _userRepository, IMapper _mapper) :
     [HttpPut]
     public async Task<ActionResult> UpdateUser(MemberUpdateDto memberUpdateDto)
     {
-        var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
-        var user = await _userRepository.GetUserByUsernameAsync(username);
+        var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
 
         if (user == null)
             return NotFound();
@@ -39,5 +43,36 @@ public class UsersController(IUserRepository _userRepository, IMapper _mapper) :
             return NoContent();
 
         return BadRequest("Failed to update user");
+    }
+
+    [HttpPost("add-photo")]
+    public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file)
+    {
+        var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+
+        if (user == null)
+            return NotFound();
+
+        var result = await _photoService.AddPhotoAsync(file);
+
+        if (result.Error != null)
+            return BadRequest(result.Error.Message);
+
+        var photo = new Photo
+        {
+            Url = result.SecureUrl.AbsoluteUri,
+            PublicId = result.PublicId,
+            IsMain = !user.Photos.Any(),
+        };
+
+        user.Photos.Add(photo);
+
+        if (await _userRepository.SaveAllAsync())
+            return CreatedAtAction(nameof(GetUser), new
+            {
+                username = user.UserName,
+            }, _mapper.Map<PhotoDto>(photo));
+
+        return BadRequest("Problem adding photo.");
     }
 }

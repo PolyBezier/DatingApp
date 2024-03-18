@@ -18,7 +18,7 @@ export class MembersService {
       return of(this.members);
     }
 
-    return this.http.get<Member[]>(`${this.baseUrl}users`).pipe(
+    return this.http.get<Member[]>(`${this.baseUrl}/users`).pipe(
       map(members => {
         this.members = members;
         return members;
@@ -33,11 +33,11 @@ export class MembersService {
       return of(member);
     }
 
-    return this.http.get<Member>(`${this.baseUrl}users/${username}`);
+    return this.http.get<Member>(`${this.baseUrl}/users/${username}`);
   }
 
   updateMember(member: Member) {
-    return this.http.put(`${this.baseUrl}users`, member).pipe(
+    return this.http.put(`${this.baseUrl}/users`, member).pipe(
       map(() => {
         const index = this.members.indexOf(member);
         this.members[index] = {
@@ -46,5 +46,13 @@ export class MembersService {
         }
       })
     )
+  }
+
+  setMainPhoto(photoId: number) {
+    return this.http.put(`${this.baseUrl}/users/set-main-photo/${photoId}`, {});
+  }
+
+  deletePhoto(photoId: number) {
+    return this.http.delete(`${this.baseUrl}/users/delete-photo/${photoId}`);
   }
 }

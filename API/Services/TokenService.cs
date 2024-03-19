@@ -4,7 +4,6 @@ using API.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 
 namespace API.Services;
 
@@ -14,7 +13,10 @@ public class TokenService(IConfiguration config) : ITokenService
 
     public string CreateToken(AppUser user)
     {
-        List<Claim> claims = [new(JwtRegisteredClaimNames.NameId, user.UserName)];
+        List<Claim> claims = [
+            new(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
+            new(JwtRegisteredClaimNames.UniqueName, user.UserName)
+        ];
 
         var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
 

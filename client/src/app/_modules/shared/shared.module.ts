@@ -7,6 +7,8 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { SPINNER_TYPE } from 'src/app/consts';
 import { FileUploadModule } from 'ng2-file-upload';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { PaginationModule } from 'ngx-bootstrap/pagination';
+
 
 @NgModule({
   declarations: [],
@@ -21,7 +23,8 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
       type: SPINNER_TYPE
     }),
     FileUploadModule,
-    BsDatepickerModule.forRoot()
+    BsDatepickerModule.forRoot(),
+    PaginationModule.forRoot(),
   ],
   exports: [
     BsDropdownModule,
@@ -29,7 +32,8 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
     TabsModule,
     NgxSpinnerModule,
     FileUploadModule,
-    BsDatepickerModule
+    BsDatepickerModule,
+    PaginationModule
   ]
 })
 export class SharedModule { }

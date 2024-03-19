@@ -1,5 +1,6 @@
 ﻿using API.DTOs;
 using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -9,19 +10,21 @@ namespace API.Data;
 
 public class UserRepository(DataContext _context, IMapper _mapper) : IUserRepository
 {
-    public async Task<MemberDto?> GetMemberAsync(string username)
+    public Task<MemberDto?> GetMemberAsync(string username)
     {
-        return await _context.Users
+        return _context.Users
             .Where(x => x.UserName == username)
             .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<MemberDto>> GetMembersAsync()
+    public Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
     {
-        return await _context.Users
+        var query = _context.Users
             .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
-            .ToListAsync();
+            .AsNoTracking();
+
+        return PagedList<MemberDto>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
     }
 
     public async Task<AppUser?> GetUserByIdAsync(int id)
@@ -29,9 +32,9 @@ public class UserRepository(DataContext _context, IMapper _mapper) : IUserReposi
         return await _context.Users.FindAsync(id);
     }
 
-    public async Task<AppUser?> GetUserByUsernameAsync(string username)
+    public Task<AppUser?> GetUserByUsernameAsync(string username)
     {
-        return await _context.Users
+        return _context.Users
             .Include(e => e.Photos)
             .FirstOrDefaultAsync(x => x.UserName == username);
     }

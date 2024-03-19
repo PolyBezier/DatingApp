@@ -8,7 +8,10 @@ public class ExceptionMiddleware(
     ILogger<ExceptionMiddleware> _logger,
     IHostEnvironment _env)
 {
-    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
 
     public async Task InvokeAsync(HttpContext context)
     {

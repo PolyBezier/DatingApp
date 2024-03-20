@@ -1,9 +1,11 @@
-﻿using API.Extensions;
+﻿using API.Attributes;
+using API.Extensions;
 using API.Interfaces;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace API.Helpers;
 
+[AutoRegister(AsInterface = false)]
 public class LogUserActivity : IAsyncActionFilter
 {
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)

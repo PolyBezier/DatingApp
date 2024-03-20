@@ -1,4 +1,5 @@
-﻿using API.Entities;
+﻿using API.Attributes;
+using API.Entities;
 using API.Extensions;
 using API.Interfaces;
 using Microsoft.IdentityModel.Tokens;
@@ -7,6 +8,7 @@ using System.Security.Claims;
 
 namespace API.Services;
 
+[AutoRegister]
 public class TokenService(IConfiguration config) : ITokenService
 {
     private readonly SymmetricSecurityKey _key = new(config.GetTokenKey());

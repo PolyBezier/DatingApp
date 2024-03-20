@@ -1,4 +1,5 @@
-﻿using API.DTOs;
+﻿using API.Attributes;
+using API.DTOs;
 using API.Entities;
 using API.Helpers;
 using API.Interfaces;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Data;
 
+[AutoRegister]
 public class UserRepository(DataContext _context, IMapper _mapper) : IUserRepository
 {
     public Task<MemberDto?> GetMemberAsync(string username)

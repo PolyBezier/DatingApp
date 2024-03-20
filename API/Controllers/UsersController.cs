@@ -74,10 +74,10 @@ public class UsersController(
         {
             Url = result.SecureUrl.AbsoluteUri,
             PublicId = result.PublicId,
-            IsMain = !user.Photos.Any(),
+            IsMain = !user.Photos!.Any(),
         };
 
-        user.Photos.Add(photo);
+        user.Photos!.Add(photo);
 
         if (await _userRepository.SaveAllAsync())
             return CreatedAtAction(nameof(GetUser), new
@@ -96,7 +96,7 @@ public class UsersController(
         if (user == null)
             return NotFound();
 
-        var photo = user.Photos.FirstOrDefault(x => x.Id == photoId);
+        var photo = user.Photos!.FirstOrDefault(x => x.Id == photoId);
 
         if (photo == null)
             return NotFound();
@@ -104,7 +104,7 @@ public class UsersController(
         if (photo.IsMain)
             return BadRequest("This is already your main photo");
 
-        var currentMain = user.Photos.FirstOrDefault(x => x.IsMain);
+        var currentMain = user.Photos!.FirstOrDefault(x => x.IsMain);
         if (currentMain != null)
             currentMain.IsMain = false;
 
@@ -121,7 +121,7 @@ public class UsersController(
     {
         var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
 
-        var photo = user!.Photos.FirstOrDefault(x => x.Id == photoId);
+        var photo = user!.Photos!.FirstOrDefault(x => x.Id == photoId);
 
         if (photo == null)
             return NotFound();
@@ -136,7 +136,7 @@ public class UsersController(
                 return BadRequest(message);
         }
 
-        user.Photos.Remove(photo);
+        user.Photos!.Remove(photo);
 
         if (await _userRepository.SaveAllAsync())
             return Ok();

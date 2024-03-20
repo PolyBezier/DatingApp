@@ -1,4 +1,5 @@
-﻿using API.Helpers;
+﻿using API.Attributes;
+using API.Helpers;
 using API.Interfaces;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace API.Services;
 
+[AutoRegister]
 public class PhotoService : IPhotoService
 {
     private readonly Cloudinary _cloudinary;

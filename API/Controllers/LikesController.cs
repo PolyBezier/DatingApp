@@ -50,7 +50,7 @@ public class LikesController(
 
         var users = await _likesRepository.GetUserLikes(likesParams);
 
-        Response.AddPaginationHeader(new PaginationHeader(
+        Response.AddPaginationHeader(new(
             users.CurrentPage,
             users.PageSize,
             users.TotalCount,

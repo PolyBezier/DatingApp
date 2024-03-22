@@ -36,7 +36,7 @@ public class LikesRepository(DataContext _context) : ILikesRepository
         var likedUsers = users.Select(user => new LikeDto
         {
             Id = user.Id,
-            UserName = user.UserName,
+            UserName = user.UserName!,
             KnownAs = user.KnownAs,
             Age = user.DateOfBirth.CalculateAge(),
             PhotoUrl = user.Photos!.FirstOrDefault(x => x.IsMain)!.Url,

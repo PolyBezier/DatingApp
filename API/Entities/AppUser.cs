@@ -1,15 +1,9 @@
-﻿namespace API.Entities;
+﻿using Microsoft.AspNetCore.Identity;
 
-public class AppUser
+namespace API.Entities;
+
+public class AppUser : IdentityUser<int>
 {
-    public int Id { get; set; }
-
-    public required string UserName { get; set; }
-
-    public byte[] PasswordHash { get; set; } = null!;
-
-    public byte[] PasswordSalt { get; set; } = null!;
-
     public DateOnly DateOfBirth { get; set; }
 
     public required string KnownAs { get; set; }
@@ -37,4 +31,6 @@ public class AppUser
 
     public List<Message>? MessagesSent { get; set; }
     public List<Message>? MessagesReceived { get; set; }
+
+    public ICollection<AppUserRole>? UserRoles { get; set; }
 }

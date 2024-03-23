@@ -5,6 +5,7 @@ using API.Extensions;
 using API.Helpers;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using static API.Helpers.Constants;
 
 namespace API.Data;
 
@@ -21,13 +22,13 @@ public class LikesRepository(DataContext _context) : ILikesRepository
         var users = _context.Users.OrderBy(u => u.UserName).AsQueryable();
         var likes = _context.Likes.AsQueryable();
 
-        if (likesParams.Predicate == "liked")
+        if (likesParams.Predicate == LikePredicates.Liked)
         {
             likes = likes.Where(like => like.SourceUserId == likesParams.UserId);
             users = likes.Select(like => like.TargetUser!);
         }
 
-        if (likesParams.Predicate == "likedBy")
+        if (likesParams.Predicate == LikePredicates.LikedBy)
         {
             likes = likes.Where(like => like.TargetUserId == likesParams.UserId);
             users = likes.Select(like => like.SourceUser!);

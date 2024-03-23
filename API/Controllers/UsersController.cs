@@ -6,6 +6,7 @@ using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static API.Helpers.Constants;
 
 namespace API.Controllers;
 
@@ -22,7 +23,7 @@ public class UsersController(
         userParams.CurrentUsername = currentUser!.UserName;
 
         if (string.IsNullOrEmpty(userParams.Gender))
-            userParams.Gender = currentUser.Gender == "male" ? "female" : "male";
+            userParams.Gender = currentUser.Gender == Gender.Male ? Gender.Female : Gender.Male;
 
         var users = await _userRepository.GetMembersAsync(userParams);
 

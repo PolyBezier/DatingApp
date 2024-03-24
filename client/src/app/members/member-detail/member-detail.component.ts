@@ -19,7 +19,7 @@ import { Message } from 'src/app/_models/message';
 })
 export class MemberDetailComponent implements OnInit {
   @ViewChild('memberTabs', { static: true }) memberTabs?: TabsetComponent;
-  member: Member = {} as Member;
+  member = {} as Member;
   images: GalleryItem[] = [];
   activeTab?: TabDirective;
   messages: Message[] = [];

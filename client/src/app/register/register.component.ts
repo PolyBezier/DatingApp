@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 export class RegisterComponent implements OnInit {
   @Output() cancelRegister = new EventEmitter();
   registerForm: FormGroup = new FormGroup({});
-  maxDate: Date = new Date();
+  maxDate = new Date();
   validationErrors: string[] | undefined;
 
   constructor(

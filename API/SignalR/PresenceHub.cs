@@ -12,8 +12,10 @@ public class PresenceHub(PresenceTracker _tracker) : Hub
     {
         var username = Context.User!.GetUsername();
 
-        await _tracker.UserConnected(username, Context.ConnectionId);
-        await Clients.Others.SendAsync(UserIsOnline, username);
+        var isOnline = await _tracker.UserConnected(username, Context.ConnectionId);
+
+        if (isOnline)
+            await Clients.Others.SendAsync(UserIsOnline, username);
 
         await SendOnlineUsers();
 
@@ -24,10 +26,10 @@ public class PresenceHub(PresenceTracker _tracker) : Hub
     {
         var username = Context.User!.GetUsername();
 
-        await _tracker.UserDisconnected(username, Context.ConnectionId);
-        await Clients.Others.SendAsync(UserIsOffline, Context.User?.GetUsername());
+        var isOffline = await _tracker.UserDisconnected(username, Context.ConnectionId);
 
-        await SendOnlineUsers();
+        if (isOffline)
+            await Clients.Others.SendAsync(UserIsOffline, Context.User?.GetUsername());
 
         await base.OnDisconnectedAsync(exception);
     }
@@ -35,6 +37,6 @@ public class PresenceHub(PresenceTracker _tracker) : Hub
     private async Task SendOnlineUsers()
     {
         var currentUsers = await _tracker.GetOnlineUsers();
-        await Clients.All.SendAsync(GetOnlineUsers, currentUsers);
+        await Clients.Caller.SendAsync(GetOnlineUsers, currentUsers);
     }
 }

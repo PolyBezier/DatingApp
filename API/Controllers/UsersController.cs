@@ -75,7 +75,7 @@ public class UsersController(
         {
             Url = result.SecureUrl.AbsoluteUri,
             PublicId = result.PublicId,
-            IsMain = !user.Photos!.Any(),
+            IsMain = user.Photos!.None(),
         };
 
         user.Photos!.Add(photo);

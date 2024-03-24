@@ -1,6 +1,7 @@
 ﻿using API.Attributes;
 using API.Data;
 using API.Helpers;
+using API.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -18,6 +19,8 @@ public static class ApplicationServiceExtensions
         services.AddCors();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
+        services.AddSignalR();
+        services.AddSingleton<PresenceTracker>();
 
         services.AddAutoRegister();
 

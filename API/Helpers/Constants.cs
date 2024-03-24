@@ -33,6 +33,7 @@ public static class Constants
         public const string UserIsOffline = "UserIsOffline";
         public const string GetOnlineUsers = "GetOnlineUsers";
         public const string ReceiveMessageThread = "ReceiveMessageThread";
+        public const string UpdateGroup = "UpdateGroup";
         public const string NewMessage = "NewMessage";
         public const string NewMessageReceived = "NewMessageReceived";
     }

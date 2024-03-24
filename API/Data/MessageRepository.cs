@@ -20,6 +20,11 @@ public class MessageRepository(DataContext _context, IMapper _mapper) : IMessage
 
     public async Task<Connection?> GetConnectionAsync(string connectionId) => await _context.Connections.FindAsync(connectionId);
 
+    public Task<Group?> GetGroupForConnection(string connectionId) => _context.Groups
+        .Include(x => x.Connections)
+        .Where(x => x.Connections.Any(c => c.ConnectionId == connectionId))
+        .FirstOrDefaultAsync();
+
     public async Task<Message?> GetMessage(int id) => await _context.Messages.FindAsync(id);
 
     public Task<Group?> GetMessageGroup(string groupName) => _context.Groups

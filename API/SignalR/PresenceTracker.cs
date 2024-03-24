@@ -4,7 +4,7 @@ namespace API.SignalR;
 
 public class PresenceTracker
 {
-    private readonly Dictionary<string, List<string>> _onlineUsers = [];
+    private static readonly Dictionary<string, List<string>> _onlineUsers = [];
 
     public Task UserConnected(string username, string connectionId)
     {
@@ -43,5 +43,17 @@ public class PresenceTracker
                 .OrderBy(x => x)
                 .ToArray());
         }
+    }
+
+    public static Task<List<string>> GetConnectionsForUser(string username)
+    {
+        List<string> connectionIds;
+
+        lock (_onlineUsers)
+        {
+            connectionIds = _onlineUsers.GetValueOrDefault(username) ?? [];
+        }
+
+        return Task.FromResult(connectionIds);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using API.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using static API.Helpers.Constants.SignalRMessages;
 
 namespace API.SignalR;
 
@@ -12,7 +13,7 @@ public class PresenceHub(PresenceTracker _tracker) : Hub
         var username = Context.User!.GetUsername();
 
         await _tracker.UserConnected(username, Context.ConnectionId);
-        await Clients.Others.SendAsync("UserIsOnline", username);
+        await Clients.Others.SendAsync(UserIsOnline, username);
 
         await SendOnlineUsers();
 
@@ -24,7 +25,7 @@ public class PresenceHub(PresenceTracker _tracker) : Hub
         var username = Context.User!.GetUsername();
 
         await _tracker.UserDisconnected(username, Context.ConnectionId);
-        await Clients.Others.SendAsync("UserIsOffline", Context.User?.GetUsername());
+        await Clients.Others.SendAsync(UserIsOffline, Context.User?.GetUsername());
 
         await SendOnlineUsers();
 
@@ -34,6 +35,6 @@ public class PresenceHub(PresenceTracker _tracker) : Hub
     private async Task SendOnlineUsers()
     {
         var currentUsers = await _tracker.GetOnlineUsers();
-        await Clients.All.SendAsync("GetOnlineUsers", currentUsers);
+        await Clients.All.SendAsync(GetOnlineUsers, currentUsers);
     }
 }

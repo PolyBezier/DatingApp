@@ -26,4 +26,13 @@ public static class Constants
         public const string RequireAdminRole = "RequireAdminRole";
         public const string ModeratePhotoRole = "ModeratePhotoRole";
     }
+
+    public static class SignalRMessages
+    {
+        public const string UserIsOnline = "UserIsOnline";
+        public const string UserIsOffline = "UserIsOffline";
+        public const string GetOnlineUsers = "GetOnlineUsers";
+        public const string ReceiveMessageThread = "ReceiveMessageThread";
+        public const string NewMessage = "NewMessage";
+    }
 }

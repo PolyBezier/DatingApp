@@ -11,8 +11,7 @@ namespace API.SignalR;
 
 [Authorize]
 public class MessageHub(
-    IMessageRepository _messageRepository,
-    IUserRepository _userRepository,
+    IUnitOfWork _uow,
     IMapper _mapper,
     IHubContext<PresenceHub> _presenceHub) : Hub
 {
@@ -29,7 +28,10 @@ public class MessageHub(
 
         await Clients.Group(groupName).SendAsync(UpdateGroup, group);
 
-        var messages = await _messageRepository.GetMessageThread(currentUser, otherUser!);
+        var messages = await _uow.MessageRepository.GetMessageThread(currentUser, otherUser!);
+
+        if (_uow.HasChanges())
+            await _uow.Complete();
 
         await Clients.Caller.SendAsync(ReceiveMessageThread, messages);
 
@@ -52,8 +54,8 @@ public class MessageHub(
         if (username == createMessageDto.RecipientUsername?.ToLower())
             throw new HubException("You cannot send messages to yourself");
 
-        var sender = await _userRepository.GetUserByUsernameAsync(username);
-        var recipient = await _userRepository.GetUserByUsernameAsync(createMessageDto.RecipientUsername!);
+        var sender = await _uow.UserRepository.GetUserByUsernameAsync(username);
+        var recipient = await _uow.UserRepository.GetUserByUsernameAsync(createMessageDto.RecipientUsername!);
 
         if (recipient == null)
             throw new HubException("Not found user");
@@ -68,7 +70,7 @@ public class MessageHub(
         };
 
         var groupName = GetGroupName(sender.UserName!, recipient.UserName!);
-        var group = await _messageRepository.GetMessageGroup(groupName);
+        var group = await _uow.MessageRepository.GetMessageGroup(groupName);
 
         if (group?.Connections.Any(c => c.Username == recipient.UserName) == true)
             message.DateRead = DateTime.UtcNow;
@@ -84,9 +86,9 @@ public class MessageHub(
                 });
         }
 
-        _messageRepository.AddMessage(message);
+        _uow.MessageRepository.AddMessage(message);
 
-        if (await _messageRepository.SaveAllAsync())
+        if (await _uow.Complete())
             await Clients.Group(groupName).SendAsync(NewMessage, _mapper.Map<MessageDto>(message));
     }
 
@@ -99,18 +101,18 @@ public class MessageHub(
 
     private async Task<Group> AddToGroup(string groupName)
     {
-        var group = await _messageRepository.GetMessageGroup(groupName);
+        var group = await _uow.MessageRepository.GetMessageGroup(groupName);
         var connection = new Connection(Context.ConnectionId, Context.User!.GetUsername());
 
         if (group == null)
         {
             group = new Group(groupName);
-            _messageRepository.AddGroup(group);
+            _uow.MessageRepository.AddGroup(group);
         }
 
         group.Connections.Add(connection);
 
-        if (await _messageRepository.SaveAllAsync())
+        if (await _uow.Complete())
             return group;
 
         throw new HubException("Failed to add to group");
@@ -118,14 +120,14 @@ public class MessageHub(
 
     private async Task<Group> RemoveFromMessageGroup()
     {
-        var group = await _messageRepository.GetGroupForConnection(Context.ConnectionId);
+        var group = await _uow.MessageRepository.GetGroupForConnection(Context.ConnectionId);
         var connection = group?.Connections.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
 
         if (connection != null)
         {
-            _messageRepository.RemoveConnection(connection);
+            _uow.MessageRepository.RemoveConnection(connection);
 
-            if (await _messageRepository.SaveAllAsync())
+            if (await _uow.Complete())
                 return group!;
         }
 

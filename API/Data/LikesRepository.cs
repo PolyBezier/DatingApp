@@ -1,5 +1,4 @@
-﻿using API.Attributes;
-using API.DTOs;
+﻿using API.DTOs;
 using API.Entities;
 using API.Extensions;
 using API.Helpers;
@@ -9,7 +8,6 @@ using static API.Helpers.Constants;
 
 namespace API.Data;
 
-[AutoRegister]
 public class LikesRepository(DataContext _context) : ILikesRepository
 {
     public async Task<UserLike?> GetUserLike(int sourceUserId, int targedUserId)

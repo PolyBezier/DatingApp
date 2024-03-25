@@ -1,5 +1,4 @@
-﻿using API.Attributes;
-using API.DTOs;
+﻿using API.DTOs;
 using API.Entities;
 using API.Helpers;
 using API.Interfaces;
@@ -9,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Data;
 
-[AutoRegister]
 public class UserRepository(DataContext _context, IMapper _mapper) : IUserRepository
 {
     public Task<MemberDto?> GetMemberAsync(string username)
@@ -54,16 +52,16 @@ public class UserRepository(DataContext _context, IMapper _mapper) : IUserReposi
             .FirstOrDefaultAsync(x => x.UserName == username);
     }
 
+    public async Task<string?> GetUserGender(string username) => await _context.Users
+        .Where(x => x.UserName == username)
+        .Select(x => x.Gender)
+        .FirstOrDefaultAsync();
+
     public async Task<IEnumerable<AppUser>> GetUsersAsync()
     {
         return await _context.Users
             .Include(e => e.Photos)
             .ToListAsync();
-    }
-
-    public async Task<bool> SaveAllAsync()
-    {
-        return await _context.SaveChangesAsync() > 0;
     }
 
     public void Update(AppUser user)

@@ -8,6 +8,7 @@ public interface IUserRepository
 {
     void Update(AppUser user);
     Task<IEnumerable<AppUser>> GetUsersAsync();
+    Task<IEnumerable<AppUser>> GetUsersWithPhotosToApproveAsync();
     Task<AppUser?> GetUserByIdAsync(int id);
     Task<AppUser?> GetUserByUsernameAsync(string username);
     Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams);

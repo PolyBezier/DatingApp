@@ -29,6 +29,9 @@ public class UsersController(
 
         var users = await _uow.UserRepository.GetMembersAsync(userParams);
 
+        foreach (var user in users)
+            user.Photos = user.Photos.Where(p => user.UserName == username || p.Approved).ToList();
+
         Response.AddPaginationHeader(new(
             users.CurrentPage,
             users.PageSize,
@@ -41,7 +44,13 @@ public class UsersController(
     [HttpGet("{username}")]
     public async Task<ActionResult<MemberDto>> GetUser(string username)
     {
-        return (await _uow.UserRepository.GetMemberAsync(username))!;
+        bool includePending = User.GetUsername() == username;
+
+        var user = await _uow.UserRepository.GetMemberAsync(username);
+
+        user!.Photos = user.Photos.Where(p => includePending || p.Approved).ToList();
+
+        return Ok(user);
     }
 
     [HttpPut]
@@ -77,7 +86,6 @@ public class UsersController(
         {
             Url = result.SecureUrl.AbsoluteUri,
             PublicId = result.PublicId,
-            IsMain = user.Photos!.None(),
         };
 
         user.Photos!.Add(photo);
@@ -103,6 +111,9 @@ public class UsersController(
 
         if (photo == null)
             return NotFound();
+
+        if (!photo.Approved)
+            return BadRequest("This photo is not approved yet");
 
         if (photo.IsMain)
             return BadRequest("This is already your main photo");

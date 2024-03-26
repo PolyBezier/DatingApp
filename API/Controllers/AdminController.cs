@@ -1,13 +1,17 @@
-﻿using API.Entities;
+﻿using API.DTOs;
+using API.Entities;
+using API.Extensions;
+using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using static API.Helpers.Constants;
 
 namespace API.Controllers;
 
-public class AdminController(UserManager<AppUser> _userManager) : BaseApiController
+public class AdminController(UserManager<AppUser> _userManager, IUnitOfWork _uow) : BaseApiController
 {
     [Authorize(Policy = Policies.RequireAdminRole)]
     [HttpGet("users-with-roles")]
@@ -56,8 +60,45 @@ public class AdminController(UserManager<AppUser> _userManager) : BaseApiControl
 
     [Authorize(Policy = Policies.ModeratePhotoRole)]
     [HttpGet("photos-to-moderate")]
-    public ActionResult GetPhotosForModeration()
+    public async Task<ActionResult<IEnumerable<UserPhotoDto>>> GetPhotosForModeration()
     {
-        return Ok("Admins or moderators can see this");
+        var users = await _uow.UserRepository.GetUsersWithPhotosToApproveAsync();
+
+        var result = new List<UserPhotoDto>();
+
+        foreach (var user in users)
+            foreach (var photo in user.Photos!)
+                result.Add(new()
+                {
+                    Id = photo.Id,
+                    IsMain = photo.IsMain,
+                    Url = photo.Url,
+                    Username = user.UserName!,
+                });
+
+        return Ok(result);
+    }
+
+    [Authorize(Policy=Policies.ModeratePhotoRole)]
+    [HttpPut("approve-photo/{username}/{photoId}")]
+    public async Task<ActionResult> ApprovePhoto(string username, int photoId)
+    {
+        var user = await _uow.UserRepository.GetUserByUsernameAsync(username);
+
+        if (user == null)
+            return NotFound("User not found");
+        
+        var photo = user.Photos!.FirstOrDefault(p => p.Id == photoId);
+
+        if (photo == null)
+            return NotFound("Photo not found");
+
+        photo.Approved = true;
+        if (user.Photos!.None(p => p.IsMain))
+            photo.IsMain = true;
+
+        await _uow.Complete();
+
+        return Ok();
     }
 }

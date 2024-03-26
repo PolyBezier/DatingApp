@@ -64,6 +64,14 @@ public class UserRepository(DataContext _context, IMapper _mapper) : IUserReposi
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<AppUser>> GetUsersWithPhotosToApproveAsync()
+    {
+        return await _context.Users
+            .Include(u => u.Photos!.Where(p => !p.Approved))
+            .Where(u => u.Photos!.Any(p => !p.Approved))
+            .ToListAsync();
+    }
+
     public void Update(AppUser user)
     {
         _context.Entry(user).State = EntityState.Modified;

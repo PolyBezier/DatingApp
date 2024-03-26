@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 using static API.Helpers.Constants;
 
 namespace API.Controllers;
@@ -79,23 +78,28 @@ public class AdminController(UserManager<AppUser> _userManager, IUnitOfWork _uow
         return Ok(result);
     }
 
-    [Authorize(Policy=Policies.ModeratePhotoRole)]
-    [HttpPut("approve-photo/{username}/{photoId}")]
-    public async Task<ActionResult> ApprovePhoto(string username, int photoId)
+    [Authorize(Policy = Policies.ModeratePhotoRole)]
+    [HttpPut("approve-photo")]
+    public async Task<ActionResult> ApprovePhoto(ApprovePhotoDto approveDto)
     {
-        var user = await _uow.UserRepository.GetUserByUsernameAsync(username);
+        var user = await _uow.UserRepository.GetUserByUsernameAsync(approveDto.Username);
 
         if (user == null)
             return NotFound("User not found");
-        
-        var photo = user.Photos!.FirstOrDefault(p => p.Id == photoId);
+
+        var photo = user.Photos!.FirstOrDefault(p => p.Id == approveDto.Id);
 
         if (photo == null)
             return NotFound("Photo not found");
 
-        photo.Approved = true;
-        if (user.Photos!.None(p => p.IsMain))
-            photo.IsMain = true;
+        if (approveDto.Approve)
+        {
+            photo.Approved = true;
+            if (user.Photos!.None(p => p.IsMain))
+                photo.IsMain = true;
+        }
+        else
+            user.Photos!.Remove(photo);
 
         await _uow.Complete();
 

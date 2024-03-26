@@ -18,8 +18,8 @@ export class PhotoManagementComponent implements OnInit {
     });
   }
 
-  approvePhoto(username: string, photoId: number) {
-    this.adminService.approvePhoto(username, photoId).subscribe({
+  approvePhoto(username: string, photoId: number, approve: boolean) {
+    this.adminService.approvePhoto(username, photoId, approve).subscribe({
       next: () => this.photos = this.photos.filter(p => p.id !== photoId)
     });
   }

@@ -12,7 +12,8 @@
                 <td>{{ photo.username }}</td>
                 <td><img [src]="photo.url" alt="User photo"></td>
                 <td>
-                    <button class="btn btn-info" (click)="approvePhoto(photo.username, photo.id)">Approve</button>
+                    <button class="btn btn-info" (click)="approvePhoto(photo.username, photo.id, true)">Approve</button>
+                    <button class="btn btn-danger mx-2" (click)="approvePhoto(photo.username, photo.id, false)">Reject</button>
                 </td>
             </tr>
         </tbody>

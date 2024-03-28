@@ -17,6 +17,7 @@ export class MemberMessagesComponent implements AfterViewChecked {
   @ViewChild('scrollMe') scroll?: ElementRef;
   @Input() username?: string;
   messageContent = '';
+  loading = false;
 
   constructor(public messageService: MessagesService) { }
 
@@ -29,9 +30,11 @@ export class MemberMessagesComponent implements AfterViewChecked {
       return;
     }
 
-    this.messageService.sendMessage(this.username, this.messageContent).then(() => {
-      this.messageForm?.reset();
-    });
+    this.loading = true;
+
+    this.messageService.sendMessage(this.username, this.messageContent)
+      .then(() => this.messageForm?.reset())
+      .finally(() => this.loading = false);
   }
 
   scrollDown() {
